@@ -1,0 +1,733 @@
+/* ==========================================================================
+   SmartBike — Direction « Fiche technique »
+   1. Variables   2. Base   3. Boutons   4. En-tête   5. Messages
+   6. Pied de page   7. Composants communs   8. Page d'accueil
+   ========================================================================== */
+
+/* ─── 1. VARIABLES ─── */
+:root {
+    /* Palette */
+    --fond:        #ECEEF1;   /* fond des pages */
+    --encre:       #161B26;   /* texte, traits, bordures */
+    --cobalt:      #2340D9;   /* liens, boutons, prix */
+    --surligne:    #F5C518;   /* fond de surlignage uniquement, jamais en texte */
+    --trait:       #B8BFCA;   /* lignes de tableau, séparateurs */
+    --alerte:      #D6362B;   /* rupture de stock, erreurs */
+    --encre-douce: #4A5263;   /* texte secondaire (nuance de l'encre) */
+    --teinte:      color-mix(in srgb, var(--trait) 45%, var(--fond)); /* fond pâle : survol, menus, badges */
+
+    /* Couleur de chaque catégorie (bande à gauche des cartes) */
+    --cat-ville: var(--cobalt);
+    --cat-vtt:   var(--encre-douce);
+
+    /* Polices */
+    --police-texte: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+    --police-mono:  "IBM Plex Mono", Consolas, "Courier New", monospace;
+
+    /* Mise en page */
+    --largeur-max: 1240px;
+    --marge-cote:  40px;
+}
+
+/* ─── 2. BASE ─── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: var(--fond);
+    color: var(--encre);
+    font-family: var(--police-texte);
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+h1, h2, h3 { line-height: 1.15; text-wrap: balance; }
+
+a { color: var(--cobalt); }
+a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--cobalt);
+    outline-offset: 2px;
+}
+
+img { max-width: 100%; display: block; }
+
+/* Texte lu par les lecteurs d'écran mais invisible */
+.visuellement-cache {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* Prix, références et caractéristiques */
+.mono {
+    font-family: var(--police-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Surlignage jaune : toujours avec du texte foncé */
+mark, .surligne {
+    background: var(--surligne);
+    color: var(--encre);
+    padding: 0 4px;
+}
+
+.conteneur {
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding-inline: var(--marge-cote);
+}
+
+/* ─── 3. BOUTONS ─── */
+.btn {
+    display: inline-block;
+    padding: 10px 18px;
+    font-family: var(--police-texte);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--cobalt);
+    cursor: pointer;
+}
+.btn-principal { background: var(--cobalt); color: var(--fond); }
+.btn-principal:hover { background: var(--encre); border-color: var(--encre); }
+.btn-contour { background: transparent; color: var(--encre); border-color: var(--encre); }
+.btn-contour:hover { background: var(--encre); color: var(--fond); }
+.btn-petit { padding: 6px 12px; font-size: 14px; }
+.btn-large { display: block; width: 100%; text-align: center; padding: 14px 18px; font-size: 16px; }
+.btn:disabled, .btn.desactive {
+    background: var(--trait);
+    border-color: var(--trait);
+    color: var(--encre-douce);
+    cursor: not-allowed;
+}
+
+/* ─── 4. EN-TÊTE ─── */
+.entete {
+    background: var(--fond);
+    border-bottom: 1px solid var(--encre);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.entete-in {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 32px;
+    padding-block: 18px;
+}
+.logo {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--encre);
+    text-decoration: none;
+}
+.menu { display: flex; flex-wrap: wrap; }
+.menu a {
+    padding: 2px 16px;
+    border-left: 1px solid var(--trait);
+    color: var(--encre);
+    text-decoration: none;
+    font-size: 15px;
+}
+.menu a:first-child { border-left: 0; }
+.menu a:hover { color: var(--cobalt); }
+.menu a.actif { color: var(--cobalt); font-weight: 600; }
+.entete-compte { display: flex; align-items: center; gap: 18px; }
+.lien-deconnexion { color: var(--alerte); font-size: 14px; text-decoration: none; }
+.lien-deconnexion:hover { text-decoration: underline; }
+
+/* ─── 5. MESSAGES ─── */
+.message {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border: 1px solid var(--encre);
+    border-left-width: 6px;
+    font-size: 15px;
+}
+.message-succes { border-left-color: var(--cobalt); }
+.message-erreur { border-left-color: var(--alerte); }
+
+/* ─── 6. PIED DE PAGE ─── */
+.pied {
+    background: var(--encre);
+    color: var(--trait);
+    margin-top: 80px;
+    padding-block: 48px 24px;
+}
+.pied-grille {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 32px;
+}
+.pied-logo {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--fond);
+    margin-bottom: 8px;
+}
+.pied h4 { color: var(--fond); font-size: 15px; margin-bottom: 12px; }
+.pied a {
+    display: block;
+    color: var(--trait);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+.pied a:hover { color: var(--fond); }
+.pied-bas {
+    border-top: 1px solid var(--encre-douce);
+    padding-top: 18px;
+    font-size: 13px;
+}
+
+/* ─── 7. COMPOSANTS COMMUNS ─── */
+
+/* Fil d'Ariane */
+.fil-ariane { padding-block: 16px 0; font-size: 14px; color: var(--encre-douce); }
+.fil-ariane a { color: var(--encre-douce); text-decoration: none; }
+.fil-ariane a:hover { color: var(--cobalt); text-decoration: underline; }
+
+/* Titre de page */
+.titre-page { font-size: 36px; letter-spacing: -0.015em; padding-block: 20px 24px; }
+
+/* Formulaires (:where = priorité nulle, les pages pas encore refaites gardent leurs styles) */
+:where(input:not([type="checkbox"], [type="radio"], [type="file"], [type="hidden"]), select, textarea) {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: var(--police-texte);
+    font-size: 15px;
+    color: var(--encre);
+    background: var(--fond);
+    border: 1px solid var(--encre-douce);
+    border-radius: 0;
+}
+:where(input, select, textarea):focus { outline: 2px solid var(--cobalt); outline-offset: 0; border-color: var(--cobalt); }
+:where(input[type="checkbox"], input[type="radio"]) { accent-color: var(--cobalt); width: 16px; height: 16px; }
+.champ { display: grid; gap: 6px; }
+.champ > label, .champ-titre { font-size: 14px; font-weight: 600; }
+.champ-erreur { color: var(--alerte); font-size: 13px; }
+.case { display: flex; align-items: center; gap: 10px; font-size: 15px; cursor: pointer; }
+
+/* Badges (stock, statuts) */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid currentColor;
+}
+.badge-ok      { color: var(--cobalt); }
+.badge-alerte  { color: var(--alerte); }
+.badge-neutre  { color: var(--encre-douce); }
+
+/* Statuts de commande (partial resources/views/partials/statut.blade.php) */
+.statut-en_attente { color: var(--encre-douce); }
+.statut-payee      { color: var(--cobalt); }
+.statut-expediee   { color: var(--fond); background: var(--encre); border-color: var(--encre); }
+.statut-annulee    { color: var(--alerte); }
+
+/* Bloc encadré avec un titre (formulaires, détails) */
+.bloc { border: 1px solid var(--encre); }
+.bloc > h2 { font-size: 18px; padding: 12px 16px; border-bottom: 1px solid var(--encre); }
+.bloc-corps { padding: 20px 16px; display: grid; gap: 16px; }
+
+/* Montants alignés (mono) */
+.montant { font-family: var(--police-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Tableaux de données
+   .tableau-defile : défile horizontalement sur petit écran
+   .tableau-cartes : chaque ligne devient une carte sur mobile (voir RESPONSIVE) */
+.tableau-defile { overflow-x: auto; border: 1px solid var(--encre); }
+.tableau { width: 100%; border-collapse: collapse; font-size: 15px; }
+.tableau th {
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--encre-douce);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--encre);
+    white-space: nowrap;
+}
+.tableau td { padding: 14px; border-top: 1px solid var(--trait); vertical-align: middle; }
+.tableau tbody tr:first-child td { border-top: 0; }
+.tableau .num { text-align: right; font-family: var(--police-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tableau th.num { font-family: var(--police-texte); }
+.tableau tfoot td { border-top: 1px solid var(--encre); font-weight: 700; }
+
+/* Récapitulatif (panier, commande) */
+.recap { border: 1px solid var(--encre); display: grid; align-self: start; }
+.recap > h2 { font-size: 18px; padding: 12px 16px; border-bottom: 1px solid var(--encre); }
+.recap-lignes { padding: 4px 16px; display: grid; }
+.recap-ligne {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 15px;
+}
+.recap-ligne + .recap-ligne { border-top: 1px solid var(--trait); }
+.recap-ligne .quantite-x { color: var(--encre-douce); font-family: var(--police-mono); font-size: 13px; }
+.recap-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 14px 16px;
+    border-top: 1px solid var(--encre);
+    font-size: 17px;
+    font-weight: 700;
+}
+.recap-total .montant { color: var(--cobalt); font-size: 22px; }
+.recap-actions { padding: 0 16px 16px; display: grid; gap: 12px; }
+.lien-simple { text-align: center; font-size: 14px; }
+
+/* Zone vide (panier vide, aucun résultat) */
+.zone-vide {
+    border: 1px dashed var(--trait);
+    padding: 48px 20px;
+    display: grid;
+    gap: 16px;
+    justify-items: center;
+    text-align: center;
+    color: var(--encre-douce);
+}
+
+/* Étiquette de catégorie : petit carré de couleur + nom */
+.cat-etiquette { --cat: var(--cat-ville); display: inline-flex; align-items: center; gap: 8px; }
+.cat-etiquette::before { content: ""; width: 10px; height: 10px; background: var(--cat); }
+.cat-etiquette.vtt { --cat: var(--cat-vtt); }
+
+/* Pagination */
+.zone-pagination { margin-top: 32px; }
+.zone-pagination ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; list-style: none; }
+.zone-pagination .page-link {
+    display: inline-block;
+    min-width: 40px;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid var(--trait);
+    color: var(--encre);
+    text-decoration: none;
+}
+.zone-pagination a.page-link:hover { border-color: var(--cobalt); color: var(--cobalt); }
+.zone-pagination .active .page-link { background: var(--cobalt); border-color: var(--cobalt); color: var(--fond); }
+.zone-pagination .disabled .page-link { color: var(--trait); }
+
+/* Pictogramme affiché quand une photo manque */
+.picto-velo { width: 55%; max-width: 180px; color: var(--trait); }
+
+/* Tableau de caractéristiques */
+.carac { width: 100%; border-collapse: collapse; font-size: 14px; }
+.carac th {
+    text-align: left;
+    font-weight: 400;
+    color: var(--encre-douce);
+    padding: 6px 0;
+    border-top: 1px solid var(--trait);
+}
+.carac td {
+    text-align: right;
+    font-family: var(--police-mono);
+    font-variant-numeric: tabular-nums;
+    padding: 6px 0;
+    border-top: 1px solid var(--trait);
+}
+.carac td.texte { font-family: var(--police-texte); }
+
+.prix {
+    font-family: var(--police-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--cobalt);
+}
+
+/* Carte produit : cadre fin, bande de catégorie à gauche */
+.carte-produit {
+    --cat: var(--cat-ville);
+    border: 1px solid var(--encre);
+    border-left: 6px solid var(--cat);
+    display: grid;
+    align-content: start;
+}
+.carte-produit.vtt { --cat: var(--cat-vtt); }
+.carte-ref {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--trait);
+    font-size: 13px;
+    color: var(--encre-douce);
+}
+.carte-ref .mono { color: var(--encre); }
+.carte-photo {
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+    border-bottom: 1px solid var(--trait);
+    overflow: hidden;
+}
+.carte-photo img { width: 100%; height: 100%; object-fit: cover; }
+.carte-infos { padding: 14px; display: grid; gap: 12px; }
+.carte-infos h3 { font-size: 19px; }
+.carte-pied {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Carte mise en avant : photo à gauche, infos à droite */
+.carte-large { grid-template-columns: 1fr 1fr; }
+.carte-large .carte-ref { grid-column: 1 / -1; }
+.carte-large .carte-photo {
+    aspect-ratio: auto;
+    height: 100%;
+    border-bottom: 0;
+    border-right: 1px solid var(--trait);
+}
+.carte-large .carte-infos { align-content: center; padding: 20px; }
+.carte-large .carte-infos h3 { font-size: 24px; }
+
+/* ─── 8. PAGE D'ACCUEIL ─── */
+.section { padding-block: 56px 0; }
+.section-titre {
+    font-size: 28px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--encre);
+}
+
+/* Haut de page avec photo */
+.accueil-hero {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 48px;
+    align-items: center;
+    padding-block: 56px 48px;
+    border-bottom: 1px solid var(--trait);
+}
+.accueil-hero h1 {
+    font-size: 52px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.04;
+    margin-bottom: 18px;
+}
+.accueil-hero p {
+    font-size: 18px;
+    color: var(--encre-douce);
+    max-width: 42ch;
+    margin-bottom: 28px;
+}
+.accueil-photo { border: 1px solid var(--encre); }
+.accueil-photo img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+/* Catégories : tableau à deux colonnes */
+.categories-tableau {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--encre);
+}
+.categorie-col {
+    --cat: var(--cat-ville);
+    padding: 24px;
+    border-top: 6px solid var(--cat);
+    display: grid;
+    gap: 16px;
+    align-content: start;
+}
+.categorie-col + .categorie-col { border-left: 1px solid var(--encre); }
+.categorie-col.vtt { --cat: var(--cat-vtt); }
+.categorie-col h3 { font-size: 24px; }
+.categorie-col p { color: var(--encre-douce); }
+
+/* Produits phares : la première carte prend deux colonnes */
+.produits-grille {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.produits-grille .carte-large { grid-column: span 2; }
+
+/* Avantages : trois colonnes séparées par des traits */
+.avantages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--encre);
+    border-bottom: 1px solid var(--encre);
+}
+.avantage { padding: 24px; }
+.avantage + .avantage { border-left: 1px solid var(--trait); }
+.avantage h3 { font-size: 18px; margin-bottom: 6px; }
+.avantage p { color: var(--encre-douce); font-size: 15px; }
+
+/* ─── 9. CATALOGUE ─── */
+.catalogue {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+}
+.filtres { border: 1px solid var(--encre); }
+.filtres h2 { font-size: 18px; padding: 12px 16px; border-bottom: 1px solid var(--encre); }
+.filtres form { display: grid; }
+.filtre-groupe { display: grid; gap: 10px; padding: 16px; border-bottom: 1px solid var(--trait); }
+.filtres .btn { margin: 16px; }
+.barre-tri {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 20px;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--encre);
+}
+.barre-tri .nombre { font-size: 15px; }
+.barre-tri .nombre strong { font-family: var(--police-mono); }
+.barre-tri form { display: flex; align-items: center; gap: 10px; }
+.barre-tri label { font-size: 14px; color: var(--encre-douce); white-space: nowrap; }
+.barre-tri select { width: auto; }
+.catalogue-grille { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.catalogue-vide {
+    grid-column: 1 / -1;
+    padding: 40px;
+    text-align: center;
+    border: 1px dashed var(--trait);
+    color: var(--encre-douce);
+}
+
+/* ─── 10. FICHE PRODUIT ─── */
+.fiche {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 48px;
+    align-items: start;
+    padding-top: 24px;
+}
+.galerie { display: grid; gap: 12px; }
+.galerie-principale {
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--encre);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+.galerie-principale img { width: 100%; height: 100%; object-fit: cover; }
+.miniatures { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.miniature {
+    aspect-ratio: 4 / 3;
+    padding: 0;
+    border: 1px solid var(--trait);
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+}
+.miniature img { width: 100%; height: 100%; object-fit: cover; }
+.miniature:hover { border-color: var(--encre); }
+.miniature.active { border: 2px solid var(--cobalt); }
+
+.fiche-infos { display: grid; gap: 18px; }
+.fiche-ref {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    font-size: 14px;
+    color: var(--encre-douce);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--encre);
+}
+.fiche-ref .mono { color: var(--encre); }
+.fiche-infos h1 { font-size: 40px; letter-spacing: -0.02em; }
+.fiche-prix-stock { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.fiche-infos .prix { font-size: 30px; }
+.fiche-infos .carac { font-size: 15px; }
+.fiche-infos .carac th, .fiche-infos .carac td { padding: 10px 0; }
+
+.fiche-description { padding-top: 56px; }
+.fiche-description p { max-width: 70ch; color: var(--encre-douce); }
+
+/* ─── 11. PANIER ─── */
+.panier {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 32px;
+    align-items: start;
+}
+.article { display: flex; align-items: center; gap: 14px; }
+.article-photo {
+    width: 72px;
+    aspect-ratio: 4 / 3;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--trait);
+    overflow: hidden;
+}
+.article-photo img { width: 100%; height: 100%; object-fit: cover; }
+.article-photo .picto-velo { width: 80%; }
+.article-nom { font-weight: 600; color: var(--encre); text-decoration: none; }
+.article-nom:hover { color: var(--cobalt); }
+.quantite { display: inline-flex; align-items: center; border: 1px solid var(--encre); }
+.btn-qte {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    color: var(--encre);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+.btn-qte:hover:not(:disabled) { background: var(--encre); color: var(--fond); }
+.btn-qte:disabled { color: var(--trait); cursor: not-allowed; }
+.quantite-val {
+    min-width: 38px;
+    text-align: center;
+    font-family: var(--police-mono);
+    font-variant-numeric: tabular-nums;
+    border-inline: 1px solid var(--trait);
+    line-height: 32px;
+}
+.lien-supprimer {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--alerte);
+    font-family: var(--police-texte);
+    font-size: 14px;
+    cursor: pointer;
+}
+.lien-supprimer:hover { text-decoration: underline; }
+
+/* ─── 12. TUNNEL DE COMMANDE ─── */
+.etapes { display: flex; list-style: none; border: 1px solid var(--encre); margin-bottom: 28px; }
+.etapes li {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--encre-douce);
+}
+.etapes li + li { border-left: 1px solid var(--trait); }
+.etapes li.actif { color: var(--encre); font-weight: 600; box-shadow: inset 0 -3px 0 var(--cobalt); }
+.etape-num {
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    border: 1px solid currentColor;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+.etapes li.actif .etape-num { background: var(--cobalt); border-color: var(--cobalt); color: var(--fond); }
+.commande {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 32px;
+    align-items: start;
+}
+.commande-formulaire { display: grid; gap: 24px; }
+.form-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grille .large { grid-column: 1 / -1; }
+.options-livraison { display: grid; gap: 10px; }
+.option-livraison {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 16px;
+    border: 1px solid var(--trait);
+    cursor: pointer;
+}
+.option-livraison:hover { border-color: var(--encre); }
+.option-livraison:has(input:checked) { border: 2px solid var(--cobalt); padding: 13px 15px; }
+.option-livraison strong { display: block; }
+.option-livraison .delai { font-size: 14px; color: var(--encre-douce); }
+
+/* ─── 13. CONFIRMATION ─── */
+.confirmation { max-width: 820px; display: grid; gap: 28px; padding-top: 24px; }
+.confirmation-entete {
+    border: 1px solid var(--encre);
+    border-left: 6px solid var(--cobalt);
+    padding: 24px;
+    display: grid;
+    gap: 8px;
+}
+.confirmation-entete h1 { font-size: 32px; letter-spacing: -0.015em; }
+.confirmation-entete p { color: var(--encre-douce); }
+.confirmation-entete .numero { font-size: 17px; margin-top: 6px; }
+.confirmation .carac td.texte { text-align: right; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1100px) {
+    .catalogue-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1024px) {
+    .produits-grille { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+    .panier, .commande { grid-template-columns: 1fr; }
+    .catalogue { grid-template-columns: 1fr; gap: 24px; }
+    .fiche { grid-template-columns: 1fr; gap: 28px; }
+    .fiche-infos h1 { font-size: 32px; }
+}
+@media (max-width: 800px) {
+    :root { --marge-cote: 20px; }
+    .accueil-hero { grid-template-columns: 1fr; gap: 32px; padding-block: 36px; }
+    .accueil-hero h1 { font-size: 38px; }
+    .categories-tableau, .avantages, .pied-grille { grid-template-columns: 1fr; }
+    .categorie-col + .categorie-col { border-left: 0; border-top-width: 6px; }
+    .avantage + .avantage { border-left: 0; border-top: 1px solid var(--trait); }
+    .carte-large { grid-template-columns: 1fr; }
+    .carte-large .carte-photo { aspect-ratio: 4 / 3; border-right: 0; border-bottom: 1px solid var(--trait); }
+}
+@media (max-width: 700px) {
+    /* Tableaux en format carte : les titres de colonnes passent dans chaque cellule */
+    .tableau-cartes thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .tableau-cartes, .tableau-cartes tbody, .tableau-cartes tfoot, .tableau-cartes tr, .tableau-cartes td { display: block; width: 100%; }
+    .tableau-cartes tbody tr { padding: 8px 0; }
+    .tableau-cartes tbody tr + tr { border-top: 1px solid var(--encre); }
+    .tableau-cartes td { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 14px; border-top: 0; text-align: right; }
+    .tableau-cartes td[data-label]::before {
+        content: attr(data-label);
+        font-family: var(--police-texte);
+        font-size: 13px;
+        color: var(--encre-douce);
+        text-align: left;
+    }
+    .tableau-cartes td.cellule-titre { display: block; padding-block: 10px; }
+    .tableau-cartes tfoot td { border-top: 1px solid var(--encre); padding-block: 12px; }
+    .form-grille { grid-template-columns: 1fr; }
+    .etapes { flex-direction: column; }
+    .etapes li + li { border-left: 0; border-top: 1px solid var(--trait); }
+    .confirmation-entete h1 { font-size: 26px; }
+}
+@media (max-width: 560px) {
+    .titre-page { font-size: 28px; }
+    .catalogue-grille { grid-template-columns: 1fr; }
+    .miniatures { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+    .produits-grille { grid-template-columns: 1fr; }
+    .produits-grille .carte-large { grid-column: auto; }
+    .menu a { padding: 2px 10px; }
+}
